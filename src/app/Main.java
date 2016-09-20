@@ -29,6 +29,8 @@ public class Main {
         Controller controller = new Controller(model);
         JPanel buttons = new ButtonPanel();
 
+        JScrollPane scrollTable = new JScrollPane((Component) jtable);
+
         controller.addView(camembert);
         controller.addView(jtable);
         controller.addView((IView) buttons);
@@ -38,21 +40,16 @@ public class Main {
         right_pane.setLayout(new BoxLayout(right_pane, BoxLayout.PAGE_AXIS));
         right_pane.add(buttons);
         right_pane.add(Box.createRigidArea(new Dimension(0, 10)));
-        right_pane.add((Component) jtable);
+        right_pane.add(scrollTable);
 
 
-        controller.addItem(new Item("item1","Ceci est l'item 1",50));
-        controller.addItem(new Item("item2","Ceci est l'item 2",50));
-        controller.addItem(new Item("item3","Ceci est l'item 3",50));
-        controller.addItem(new Item("item4","Ceci est l'item 4",25));
-        controller.addItem(new Item("item5","Ceci est l'item 5",30));
-        controller.addItem(new Item("item6","Ceci est l'item 6",35));
-
-
+        //Initialisation des données de test
+        for (int i = 0; i < 10; i++) {
+            controller.addItem(new Item("item "+i,"Ceci est l'item "+i, (int) (Math.random()*50+1)));
+        }
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 (Component) camembert, right_pane);
-
 
 
         //1. Create the frame.

@@ -21,7 +21,13 @@ public class Camembert extends JComponent implements IView, MouseListener {
     private IModel model;
     private Controller controller;
 
-    private final Color[] colors = {Color.red, Color.green, Color.yellow, Color.cyan, Color.lightGray, Color.magenta, Color.orange, Color.pink};
+    private final Color[] colors = {
+        new Color(32,64,75),
+        new Color(30,82,93),
+        new Color(6,100,100),
+        new Color(69,118,125),
+        new Color(157,158,162),
+    };
 
     private java.util.List<Arc2D> arcs = new ArrayList<>();
     private int arcIndex = -1; // -1 when not selected, index if >= 0
@@ -58,6 +64,12 @@ public class Camembert extends JComponent implements IView, MouseListener {
         for (int ind = model.getItems().size()-1; ind >= 0; ind--) {
             g2d.setColor(colors[ind % colors.length]);
 
+            if(ind == 0){
+                if(model.getItems().size() % colors.length == 1){
+                    g2d.setColor(colors[colors.length-1 % colors.length]);
+                }
+            }
+
             Item item = model.getItems().get(ind);
             int amount = item.getAmount();
             double percentage = (double)amount / (double)totalAmount;
@@ -85,19 +97,19 @@ public class Camembert extends JComponent implements IView, MouseListener {
                 rectangle.getY() + rectangle.getHeight()/4,
                 rectangle.getX() + rectangle.getWidth()/2-50,
                 rectangle.getY() + rectangle.getHeight()/2-50);
-        g2d.setColor(Color.blue);
+        g2d.setColor(new Color(37, 98, 110));
         g2d.fill(circlein);
 
         drawCenteredTitle(g2d,model.getName(), model.getTotalAmount(), rectangle);
 
         drawSelectedArcInfo(g2d);
 
-        int[]xs = {505,535,535};
-        int[]ys = {215,200,230};
+        int[]xs = {520,505,535};
+        int[]ys = {200,230,230};
         leftArrow = new Polygon(xs, ys, 3);
 
-        int[]xs2 = {575,545,545};
-        int[]ys2 = {215,200,230};
+        int[]xs2 = {545,575,560};
+        int[]ys2 = {200,200,230};
         rightArrow = new Polygon(xs2, ys2, 3);
 
         drawSelectionArrows(g2d);
@@ -117,8 +129,8 @@ public class Camembert extends JComponent implements IView, MouseListener {
             int arcAmount = model.getItems().get(arcIndex).getAmount();
             String arcDescr = model.getItems().get(arcIndex).getDescription();
 
-            g.setColor(Color.blue);
-            g.drawRect(500,0,200,200);
+            g.setColor(Color.black);
+            g.drawRect(500,0,180,200);
             g.setColor(Color.black);
             g.drawString(arcName,505,35);
             g.drawString("Amount = "+arcAmount,505,65);
