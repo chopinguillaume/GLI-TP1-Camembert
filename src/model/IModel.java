@@ -17,7 +17,7 @@ public interface IModel {
 
     void addItem(Item item);
 
-    void removeItem(Item item);
+    void removeItem(int index);
 
     int getTotalAmount();
 }

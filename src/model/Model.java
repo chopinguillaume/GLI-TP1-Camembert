@@ -36,8 +36,8 @@ public class Model implements IModel {
         items.add(item);
     }
 
-    public void removeItem(Item item){
-        items.remove(item);
+    public void removeItem(int index) {
+        items.remove(index);
     }
 
     @Override

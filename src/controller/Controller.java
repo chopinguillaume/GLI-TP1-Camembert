@@ -2,6 +2,7 @@ package controller;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import model.IModel;
@@ -14,11 +15,14 @@ import view.IView;
 public class Controller implements IModel {
 
     private IModel model;
-    private IView view;
+    private List<IView> views = new ArrayList<>();
 
-    public Controller(IModel model, IView view) {
+    public Controller(IModel model) {
         this.model = model;
-        this.view = view;
+    }
+
+    public void addView(IView view){
+        views.add(view);
         view.setController(this);
     }
 
@@ -30,7 +34,7 @@ public class Controller implements IModel {
     @Override
     public void setName(String name) {
         model.setName(name);
-        view.notifyChange();
+        notifyChangeAllViews();
     }
 
     @Override
@@ -41,19 +45,19 @@ public class Controller implements IModel {
     @Override
     public void setItems(List<Item> items) {
         model.setItems(items);
-        view.notifyChange();
+        notifyChangeAllViews();
     }
 
     @Override
     public void addItem(Item item) {
         model.addItem(item);
-        view.notifyChange();
+        notifyChangeAllViews();
     }
 
     @Override
-    public void removeItem(Item item) {
-        model.removeItem(item);
-        view.notifyChange();
+    public void removeItem(int index) {
+        model.removeItem(index);
+        notifyChangeAllViews();
     }
 
     @Override
@@ -61,8 +65,37 @@ public class Controller implements IModel {
         return model.getTotalAmount();
     }
 
-    public void onClickItem(int index){
-        Item selectedItem = model.getItems().get(index);
-        view.notifyItemSelected(selectedItem.getName(), selectedItem.getDescription(), selectedItem.getAmount());
+    public void onClickItem(int index, IView source){
+        for(IView view : views){
+            if(!view.equals(source)) view.notifyItemSelected(index);
+        }
+    }
+
+    private void notifyChangeAllViews(){
+        for(IView view : views){
+            view.notifyChange();
+        }
+    }
+
+    public void onChangeItem(Object o, int row, int col) {
+        if(row >= 0 || row < model.getItems().size()){
+            Item item = model.getItems().get(row);
+            switch (col) {
+                case 0:
+                    item.setName(String.valueOf(o));
+                    break;
+                case 1:
+                    item.setAmount(Integer.parseInt(String.valueOf(o)));
+                    break;
+                case 2:
+                    item.setDescription(String.valueOf(o));
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }else{
+            throw new IllegalArgumentException();
+        }
+        notifyChangeAllViews();
     }
 }

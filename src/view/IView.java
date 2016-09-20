@@ -11,5 +11,5 @@ public interface IView {
 
     void notifyChange();
 
-    void notifyItemSelected(String name, String description, int amount);
+    void notifyItemSelected(int index);
 }

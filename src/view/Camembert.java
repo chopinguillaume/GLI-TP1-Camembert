@@ -25,9 +25,6 @@ public class Camembert extends JComponent implements IView, MouseListener {
 
     private java.util.List<Arc2D> arcs = new ArrayList<>();
     private int arcIndex = -1; // -1 when not selected, index if >= 0
-    private String arcName;
-    private String arcDescr;
-    private Integer arcAmount;
 
     private Ellipse2D.Double circleout;
     private Polygon leftArrow;
@@ -46,8 +43,6 @@ public class Camembert extends JComponent implements IView, MouseListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Dimension d = getSize();
-
         g2d = (Graphics2D) g;
 
         Rectangle rectangleOut = new Rectangle(0,0,500,500);
@@ -55,14 +50,12 @@ public class Camembert extends JComponent implements IView, MouseListener {
         g2d.fill(rectangleOut);
 
         Rectangle rectangle = new Rectangle(50, 50, 400, 400);
-//        g2d.setColor(Color.white);
-//        g2d.fill(rectangle);
 
         int totalAmount = model.getTotalAmount();
         double startingAngle = 0.;
 
         arcs = new ArrayList<>();
-        for (int ind = 0; ind < model.getItems().size(); ind++) {
+        for (int ind = model.getItems().size()-1; ind >= 0; ind--) {
             g2d.setColor(colors[ind % colors.length]);
 
             Item item = model.getItems().get(ind);
@@ -76,7 +69,7 @@ public class Camembert extends JComponent implements IView, MouseListener {
             }
             g2d.fill(arc);
             startingAngle += 360.*percentage;
-            arcs.add(arc);
+            arcs.add(0,arc);
         }
 
         circleout = new Ellipse2D.Double(
@@ -120,6 +113,10 @@ public class Camembert extends JComponent implements IView, MouseListener {
 
     private void drawSelectedArcInfo(Graphics g) {
         if(arcIndex >= 0){
+            String arcName = model.getItems().get(arcIndex).getName();
+            int arcAmount = model.getItems().get(arcIndex).getAmount();
+            String arcDescr = model.getItems().get(arcIndex).getDescription();
+
             g.setColor(Color.blue);
             g.drawRect(500,0,200,200);
             g.setColor(Color.black);
@@ -151,10 +148,9 @@ public class Camembert extends JComponent implements IView, MouseListener {
     }
 
     @Override
-    public void notifyItemSelected(String name, String description, int amount) {
-        arcName = name;
-        arcDescr = description;
-        arcAmount = amount;
+    public void notifyItemSelected(int index) {
+        arcIndex = index;
+        notifyChange();
     }
 
     @Override
@@ -166,10 +162,10 @@ public class Camembert extends JComponent implements IView, MouseListener {
 
         if(arcIndex >=0){
             if(leftArrow.contains(e.getX(),e.getY())){
-                arcIndex = (arcIndex + 1 + arcs.size()) % arcs.size();
+                arcIndex = (arcIndex - 1 + arcs.size()) % arcs.size();
                 selectArc=true;
             }else if(rightArrow.contains(e.getX(), e.getY())){
-                arcIndex = (arcIndex - 1 + arcs.size()) % arcs.size();
+                arcIndex = (arcIndex + 1 + arcs.size()) % arcs.size();
                 selectArc=true;
             }
         }
@@ -186,7 +182,7 @@ public class Camembert extends JComponent implements IView, MouseListener {
         if(!selectArc){
             arcIndex = -1;
         }else{
-            controller.onClickItem(arcIndex);
+            controller.onClickItem(arcIndex, this);
         }
         repaint();
     }
