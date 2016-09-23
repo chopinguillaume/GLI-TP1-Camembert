@@ -5,7 +5,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 
@@ -36,6 +37,9 @@ public class Camembert extends JComponent implements IView, MouseListener {
     private Polygon leftArrow;
     private Polygon rightArrow;
     private Graphics2D g2d;
+    private java.util.List<String> itemnames = new ArrayList<>();
+    private Rectangle rectangle;
+    private Rectangle rectangleOut;
 
     public Camembert(IModel model) {
         this.model = model;
@@ -51,11 +55,11 @@ public class Camembert extends JComponent implements IView, MouseListener {
 
         g2d = (Graphics2D) g;
 
-        Rectangle rectangleOut = new Rectangle(0,0,500,500);
+        rectangleOut = new Rectangle(0,0,500,500);
         g2d.setColor(Color.white);
         g2d.fill(rectangleOut);
 
-        Rectangle rectangle = new Rectangle(50, 50, 400, 400);
+        rectangle = new Rectangle(50, 50, 400, 400);
 
         int totalAmount = model.getTotalAmount();
         double startingAngle = 0.;
@@ -80,8 +84,10 @@ public class Camembert extends JComponent implements IView, MouseListener {
                 arc = new Arc2D.Double(rectangle,startingAngle,360.*percentage-1,Arc2D.PIE);
             }
             g2d.fill(arc);
-            startingAngle += 360.*percentage;
             arcs.add(0,arc);
+            itemnames.add(0,item.getName());
+
+            startingAngle += 360.*percentage;
         }
 
         circleout = new Ellipse2D.Double(
@@ -113,6 +119,35 @@ public class Camembert extends JComponent implements IView, MouseListener {
         rightArrow = new Polygon(xs2, ys2, 3);
 
         drawSelectionArrows(g2d);
+
+        drawItemNames(g2d);
+    }
+
+    private void drawItemNames(Graphics2D g2d) {
+        g2d.setColor(Color.black);
+        g2d.setFont(new Font("Calibri",Font.BOLD,14));
+
+        for (int i = arcs.size() - 1; i >= 0; i--) {
+            Arc2D arc = arcs.get(i);
+            String itemname = itemnames.get(i);
+
+            int rayon;
+            int centre;
+
+            if(i == arcIndex){
+                rayon = (int) rectangleOut.getWidth()/2;
+                centre = (int) rectangleOut.getCenterX();
+            }else{
+                rayon = (int) rectangle.getWidth()/2;
+                centre = (int) rectangle.getCenterX();
+            }
+
+            double startingAngle = arc.getAngleStart() + arc.getAngleExtent()/2;
+            int x = (int) (rayon * Math.cos(Math.toRadians(startingAngle)) + centre);
+            int y = (int) (rayon * Math.sin(Math.toRadians(-startingAngle)) + centre);
+
+            g2d.drawString(itemname,x,y);
+        }
     }
 
     private void drawSelectionArrows(Graphics2D g) {
