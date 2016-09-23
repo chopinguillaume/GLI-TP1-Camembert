@@ -17,6 +17,11 @@ public class TableAdapter extends AbstractTableModel {
     }
 
     @Override
+    public String getColumnName(int i) {
+        return columnNames[i];
+    }
+
+    @Override
     public int getRowCount() {
         return model.getItems().size();
     }
