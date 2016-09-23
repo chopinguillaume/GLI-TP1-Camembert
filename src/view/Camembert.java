@@ -23,10 +23,10 @@ public class Camembert extends JComponent implements IView, MouseListener {
 
     private final Color[] colors = {
         new Color(32,64,75),
-        new Color(30,82,93),
+        new Color(31, 94, 105),
         new Color(6,100,100),
-        new Color(69,118,125),
-        new Color(157,158,162),
+        new Color(108, 157, 153),
+        new Color(125, 150,162),
     };
 
     private java.util.List<Arc2D> arcs = new ArrayList<>();
